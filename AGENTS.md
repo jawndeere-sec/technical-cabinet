@@ -22,7 +22,7 @@ This repository is Matt's reusable C++ file cabinet: concise personal explanatio
 concepts/concept-name/
 ├── notes.md
 ├── example-name.cpp
-└── expected.txt        # optional; enables output verification
+└── example-name.expected.txt  # optional; enables output verification
 ```
 
 Empty example files are drafts and must not be presented as verified.

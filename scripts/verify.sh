@@ -19,7 +19,7 @@ mkdir -p "$build_root/concepts" "$build_root/snippets"
 compile_cpp() {
   local source="$1"
   local output="$2"
-  local expected="${source%/*}/expected.txt"
+  local expected="${source%.cpp}.expected.txt"
 
   mkdir -p "$(dirname "$output")"
   "$cxx" "${cxx_flags[@]}" "$source" -o "$output"

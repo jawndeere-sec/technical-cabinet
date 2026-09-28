@@ -1,0 +1,5 @@
+before scope
+constructor: file acquired
+inside scope
+destructor: file closed
+after scope

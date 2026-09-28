@@ -10,7 +10,7 @@ This is organized for lookup rather than as a course. Open the drawer for the th
 make verify
 ```
 
-This rebuilds the current examples with C++20 and strict warnings. When a drawer contains `expected.txt`, verification also runs the example and compares its output.
+This rebuilds the current examples with C++20 and strict warnings. When an example has a matching `<example>.expected.txt`, verification also runs it and compares its output.
 
 Fresh builds go into the ignored `build/` directory. Historical Apple-Silicon binaries from the original folder are retained under [`artifacts/macos-arm64`](artifacts/macos-arm64/README.md), but fresh verification is the reliable proof that current source still compiles.
 
@@ -25,7 +25,7 @@ Fresh builds go into the ignored `build/` directory. Historical Apple-Silicon bi
 | [User-defined types](concepts/user-defined-types/notes.md) | Enums, structs, unions | In progress | Verified |
 | [Functions](concepts/functions/notes.md) | Reserved drawer | Placeholder | Draft |
 | [References and pointers](concepts/references-pointers/notes.md) | Copies, aliases, pointer concepts | In progress | Draft |
-| [Classes](concepts/classes/notes.md) | Encapsulation, access, constructors, initialization, destruction | In progress | Verified |
+| [Classes](concepts/classes/notes.md) | Encapsulation, access, constructors, initialization, destruction, RAII | In progress | Verified |
 
 “Verified” means the current example compiles under `make verify`. It does not mean every sentence in the accompanying learning notes has received a publication-level technical review.
 

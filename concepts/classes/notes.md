@@ -243,3 +243,42 @@ public:
         // cleanup happens here
     }
 };
+
+## RAII: Making Object Lifetime Own Resource Lifetime
+
+- **RAII** stands for Resource Acquisition Is Initialization. The name is a mouthful, but the actual rule is straightforward: acquire a resource while constructing an object, then release that resource in the object's destructor.
+
+- If constructors are how objects are born correctly and destructors handle their death, RAII makes a resource live for exactly as long as the object responsible for it.
+
+- A resource is anything that must be released correctly after use: a file, heap allocation, mutex lock, socket, database transaction, and so on.
+
+- This is useful because cleanup no longer depends on me remembering to call a matching function at every exit point. When an automatic object leaves scope, its destructor runs whether control reaches the closing brace normally, returns early, or unwinds through that scope because of an exception.
+
+- Reaching the end of a file is NOT what closes a C++ file stream. EOF only changes the stream's state and stops further reads. The stream releases its file when the stream object is destroyed (or when I explicitly call `close()`).
+
+### Evidence From The Syscall Lab
+
+The syscall lab created this automatic object inside `main()`:
+
+```cpp
+std::ifstream file{"message.txt"};
+```
+
+My source never explicitly called `file.close()`. The bpftrace lifecycle probe still observed a successful `close(3)` before the process exited. That connected the source-level lifetime to the kernel evidence: when `main()` ended, the automatic `std::ifstream` was destroyed and its owned descriptor was released.
+
+That observation proves the descriptor closed successfully. It does not prove how the file contents were used or that every possible exit mechanism performs normal C++ stack unwinding.
+
+### Minimal Owning Wrapper
+
+[`raii-file.cpp`](raii-file.cpp) makes the ownership pattern visible around a real C file handle:
+
+```cpp
+{
+    FileOwner file{"raii-example.txt"};
+    file.write("owned by scope\n");
+} // file's destructor closes the handle here
+```
+
+The class also deletes its copy operations. If two objects both believed they owned the same raw file handle, both destructors could try to close it. One resource needs one clear owner.
+
+This is deliberately a minimal owner. A production wrapper would usually define move behavior and decide how to report a failed `fclose()` without throwing from its destructor.
