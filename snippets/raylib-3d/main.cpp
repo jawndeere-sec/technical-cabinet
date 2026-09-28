@@ -31,8 +31,7 @@ int main () {
 
     // camera definition - values are x axis, y axis, z axis. Y is up, z is forwards/backwards, x is left/right
     // moving to following camera
-    Camera3D camera = {0};
-    float heightOffset = 4.0f;
+    Camera3D camera{};
     float fixedCameraHeight = 7.0f;
     float distanceBehind = 8.0f;
     camera.position.x = spherePos.x;
@@ -54,7 +53,7 @@ int main () {
         float Back() const {return platformCenter.z - platformLength/2;}
         float Front() const {return platformCenter.z + platformLength/2;}
         float Top() const {return platformCenter.y + platformHeight/2;}
-        bool ContainsXZ(Vector3 spherePos, float sphereRadius) const
+        bool ContainsXZ(Vector3 spherePos) const
         {
             return
                 spherePos.x >= Left() &&
@@ -104,7 +103,6 @@ int main () {
     bool isDead = false;
     float deathTimer = 0.0f;
     
-    int currentPlatform = -1;
     spherePos.y = platforms[0].Top() + sphereRadius;
     float currentScore = 0.0f;
     float lastScore = 0.0f;
@@ -173,7 +171,7 @@ int main () {
 
                 if (
                     VelocityY <= 0 && // only when falling
-                    platforms[i].ContainsXZ(spherePos, sphereRadius) &&
+                    platforms[i].ContainsXZ(spherePos) &&
                     bottom <= top &&
                     bottom >= top - 0.4f   // landing tolerance
                 )
