@@ -1,11 +1,11 @@
 .PHONY: verify clean artifact-manifest
 
 verify:
-	@./scripts/verify.sh
+	@$(MAKE) -C cabinets/cpp verify
 
 clean:
-	@rm -rf build
+	@$(MAKE) -C cabinets/cpp clean
 
 artifact-manifest:
-	@./scripts/manifest-artifacts.sh
+	@$(MAKE) -C cabinets/cpp artifact-manifest
 

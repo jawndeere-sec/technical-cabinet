@@ -1,4 +1,4 @@
-name: Verify C++ examples
+name: Verify Technical Cabinet
 
 on:
   push:
@@ -10,6 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify examples
+      - name: Verify all cabinets
         run: make verify
-

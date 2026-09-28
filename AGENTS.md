@@ -1,28 +1,14 @@
-# Project guidance
+# Technical Cabinet guidance
 
-This repository is Matt's reusable C++ file cabinet: concise personal explanations and working fragments organized for retrieval, not a linear textbook.
+This repository is Matt's central technical file cabinet. It is organized for retrieval and reuse, not as a linear textbook or publishing treadmill.
 
-## Promotion rules
+## Repository rules
 
-- Treat working code and observed behavior as source material; do not turn raw conversation transcripts into notes.
-- Promote a concept only after Matt has used or deliberately studied it and approves the proposed update.
-- Treat the existing concept notes as the style corpus. Mirror Matt's direct explanations, concrete analogies, selective emphasis, and humor without manufacturing a generic textbook voice.
-- Handle the consolidation work after a learning milestone: reconstruct the mechanism from the code, debugging evidence, and conversation so Matt does not have to repeat the entire learn-practice-compile-fix cycle just to take notes.
-- Ask Matt only about genuine ambiguity, personal judgment, or wording that cannot be recovered from the work itself.
-- Do not force drawers into a curriculum or polish every note into an essay.
-- Separate verified facts from intuition, platform-specific observations, and open questions.
-- Prefer one focused example over a large project excerpt.
-- Update `README.md` when adding or renaming a drawer.
-- Run `make verify` before describing an example as verified.
-- Do not commit, push, publish, or modify the portfolio repository without Matt's explicit request.
+- Read the target sub-cabinet's `AGENTS.md` before editing it.
+- Add a sub-cabinet only after several durable entries exist; do not create empty language or domain placeholders.
+- Give each concept one primary home. Cross-link related material instead of duplicating explanations across cabinets.
+- Promote only mechanisms supported by real study, working code, or observed evidence.
+- Preserve Matt's established explanatory style and let agents handle consolidation after learning milestones.
+- Run `make verify` before describing the repository as verified.
+- Do not commit, push, publish, or update the portfolio without Matt's explicit request.
 
-## Drawer shape
-
-```text
-concepts/concept-name/
-├── notes.md
-├── example-name.cpp
-└── example-name.expected.txt  # optional; enables output verification
-```
-
-Empty example files are drafts and must not be presented as verified.
