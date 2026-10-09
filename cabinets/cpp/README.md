@@ -34,6 +34,7 @@ Fresh builds go into the ignored `build/` directory. Historical Apple-Silicon bi
 ## Snippet drawers
 
 - [`snippets/experiments`](snippets/experiments) — larger standalone experiments
+- [`snippets/project-start`](snippets/project-start) — a blank-page planning template that separates design ownership from reference work
 - [`snippets/rng`](snippets/rng) — a reusable C random-number helper
 - [`snippets/raylib-3d`](snippets/raylib-3d) — a Raylib experiment, verified only when Raylib is installed
 

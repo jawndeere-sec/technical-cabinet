@@ -52,6 +52,11 @@ while IFS= read -r -d '' source; do
 done < <(find snippets/experiments -maxdepth 1 -name '*.cpp' -print0 | sort -z)
 
 while IFS= read -r -d '' source; do
+  name="$(basename "${source%.cpp}")"
+  compile_cpp "$source" "$build_root/snippets/project-start/$name"
+done < <(find snippets/project-start -maxdepth 1 -name '*.cpp' -print0 | sort -z)
+
+while IFS= read -r -d '' source; do
   name="$(basename "${source%.c}")"
   mkdir -p "$build_root/snippets/rng"
   "$cc" "${c_flags[@]}" -c "$source" -o "$build_root/snippets/rng/$name.o"
