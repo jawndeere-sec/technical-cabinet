@@ -1,0 +1,2 @@
+Enemy Name: Wurm, Health: 50
+Enemy Name: Wurm, Health: 45

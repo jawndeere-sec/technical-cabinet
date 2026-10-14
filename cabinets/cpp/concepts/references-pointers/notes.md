@@ -82,9 +82,69 @@ References are ALIASES, not COPIES.
 
 ## Passing By Value
 
+Passing by value gives the function a separate local object or value.
+
+```cpp
+void applyDamageCopy(Combatant target, int damage);
+```
+
+`target` would contain the same member values as the caller's combatant, but it would NOT be the same object. Changing `target.health` would change only the copy.
+
 ## Passing By Reference
 
+Passing by reference aliases the caller's existing object.
+
+```cpp
+void applyDamage(Combatant& target, int damage)
+{
+    target.health = target.health - damage;
+}
+```
+
+In Terminal Velocity, calling `applyDamage(enemy, player.combatDamage)` made `target` another name for `enemy`. Assigning through `target.health` therefore changed `enemy.health` from 50 to 45 after the function returned.
+
+The two pieces do different jobs:
+
+- `&` means alias the existing object instead of copying it.
+- Leaving off `const` means mutation through that alias is allowed.
+
+The `damage` parameter is still passed by value. It receives its own copy of the integer value because the function only needs to read that small value.
+
 ## Const References
+
+A const reference is a read-only alias:
+
+```cpp
+void printCombatant(const std::string& role, const Combatant& combatant);
+```
+
+- `&` avoids copying the existing object.
+- `const` prevents this function from modifying the object through that alias.
+
+This does not make the original object universally immutable. Other code may still change it. The promise is narrower: this function cannot mutate it through this parameter.
+
+### Binding A Temporary String
+
+The call `printCombatant("Enemy", enemy)` begins with a string literal whose type is a const character array. C++ can create a temporary `std::string` from it for the call.
+
+This first attempt failed:
+
+```cpp
+void printCombatant(std::string& role, const Combatant& combatant);
+```
+
+A non-const lvalue reference cannot bind to that temporary `std::string`. Changing the role parameter to `const std::string&` allowed the temporary to remain alive through the call while preserving the function's read-only intent.
+
+### The Confusion To Avoid
+
+`&` does NOT mean read-only. It means reference.
+
+```cpp
+Combatant& target             // aliases and may mutate
+const Combatant& combatant    // aliases and may only read through this name
+```
+
+References avoid the object copy. `const` is what blocks mutation through the reference.
 
 ## What Is A Pointer?
 
@@ -102,4 +162,14 @@ References are ALIASES, not COPIES.
 
 ## What Errors This Explains
 
+- Why modifying a parameter passed by value did not change the caller's object.
+- Why a string literal could not be passed through conversion to a non-const `std::string&`.
+- Why a printing helper should accept `const Combatant&` while a state-changing helper needs `Combatant&`.
+- Why changing a referenced member persists after the helper returns.
+
 ## Things I Keep Confusing
+
+- `&` declares a reference here; `*` declares a pointer.
+- A reference prevents a copy, but it does not automatically prevent mutation.
+- `const` on a reference is a promise about access through that alias, not universal immutability.
+- The function parameter name is an alias; the object still belongs to the caller.
