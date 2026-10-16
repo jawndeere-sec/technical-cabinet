@@ -1,2 +1,5 @@
 Enemy Name: Wurm, Health: 50
 Enemy Name: Wurm, Health: 45
+Selected Name: Leto, Health: 25
+Selected Name: Wurm, Health: 45
+No combatant selected

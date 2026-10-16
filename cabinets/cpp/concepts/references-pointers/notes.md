@@ -148,17 +148,128 @@ References avoid the object copy. `const` is what blocks mutation through the re
 
 ## What Is A Pointer?
 
+A pointer is a variable whose value is a memory address.
+
+```cpp
+Combatant* selected = &enemy;
+```
+
+`selected` stores the address of the existing `enemy`. It does NOT store `enemy`'s member values, and this line creates zero additional `Combatant` objects.
+
+In this example, the pointer is non-owning. It does not create, destroy, or extend the lifetime of the object it points to. If that object is destroyed first, the pointer becomes dangling and must not be dereferenced.
+
 ## Address-of Operator
+
+In an expression, `&` obtains an existing object's address:
+
+```cpp
+Combatant* selected = &enemy;
+```
+
+The two uses of punctuation describe different things:
+
+- `Combatant*` declares a pointer-to-`Combatant` type.
+- `&enemy` produces `enemy`'s address.
+
+This is different from `Combatant& target`, where `&` is part of a reference type declaration.
 
 ## Dereferencing
 
+Dereferencing follows a stored address back to the existing object:
+
+```cpp
+printCombatant("Selected", *selected);
+```
+
+`*selected` is the `Combatant` at the stored address. It is not a copy.
+
+Dereferencing only makes sense while the pointer identifies a live object. Dereferencing `nullptr` or a dangling pointer is undefined behavior.
+
 ## Pointer Syntax
+
+The arrow operator accesses a member through a pointer:
+
+```cpp
+selected->applyDamage(5);
+```
+
+It is shorthand for:
+
+```cpp
+(*selected).applyDamage(5);
+```
+
+The parentheses matter. Unary `*` first produces the pointed-to object, and then `.` accesses that object's member.
+
+A pointer can also be reseated:
+
+```cpp
+selected = &player;
+```
+
+After this assignment, later dereferences reach `player`, not the object that `selected` previously identified. In Terminal Velocity, placing this reassignment before the damage call changed Leto from 30 to 25 while Wurm remained at 50. The pointer followed its current address exactly.
 
 ## nullptr
 
+`nullptr` explicitly represents a pointer that identifies no object:
+
+```cpp
+Combatant* selected = nullptr;
+```
+
+Guard the pointer before member access:
+
+```cpp
+if (selected != nullptr) {
+    selected->applyDamage(5);
+}
+```
+
+A null check does not make dereferencing null safe. It prevents the invalid dereference from happening.
+
+The null-target experiment also exposed an output bug: the program initially printed `Damage applied!` outside the successful branch even though no call happened. Observable messages need to follow the same control-flow branch as the event they claim occurred.
+
 ## Pointers vs References
 
+Both pointers and references can provide access to an existing object, but they express different contracts.
+
+A reference:
+
+- is an alias for one existing object;
+- must be bound during initialization;
+- cannot be reseated;
+- cannot normally represent no object;
+- uses ordinary object syntax.
+
+A pointer:
+
+- is a variable whose value is an address;
+- can be reseated to identify another object;
+- can hold `nullptr`;
+- requires dereferencing with `*` or member access with `->`;
+- does not imply ownership or heap allocation.
+
+Pointers are not merely "for memory" while references are "for values." Both reach objects and their values. Nullability and reseating are the useful distinctions here.
+
 ## Pointers and Classes
+
+When a pointer identifies a class or struct object, `->` calls a member on that same receiving object:
+
+```cpp
+Combatant* selected = &enemy;
+selected->applyDamage(5);
+```
+
+The data flow is:
+
+```text
+selected stores &enemy
+-> dereferences that address
+applyDamage receives enemy as its implicit object
+enemy's state changes
+```
+
+No copied `Combatant` is involved. A raw pointer also says nothing by itself about who owns the object. Ownership has to come from the surrounding design.
 
 ## What Errors This Explains
 
@@ -166,6 +277,9 @@ References avoid the object copy. `const` is what blocks mutation through the re
 - Why a string literal could not be passed through conversion to a non-const `std::string&`.
 - Why a printing helper should accept `const Combatant&` while a state-changing helper needs `Combatant&`.
 - Why changing a referenced member persists after the helper returns.
+- Why changing an object through `selected->member` is visible through its original name.
+- Why reseating a pointer changed which `Combatant` received damage.
+- Why a null pointer must be checked before dereferencing.
 
 ## Things I Keep Confusing
 
@@ -173,3 +287,7 @@ References avoid the object copy. `const` is what blocks mutation through the re
 - A reference prevents a copy, but it does not automatically prevent mutation.
 - `const` on a reference is a promise about access through that alias, not universal immutability.
 - The function parameter name is an alias; the object still belongs to the caller.
+- A pointer stores an address, not the pointed-to object's contents.
+- `selected->member` expands to `(*selected).member`, not `(selected*)`.
+- A raw pointer does not automatically imply heap allocation or ownership.
+- A pointer can be reseated or null; a reference cannot.
