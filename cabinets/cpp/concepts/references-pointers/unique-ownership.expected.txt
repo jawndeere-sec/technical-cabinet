@@ -1,0 +1,3 @@
+Original owner is empty
+Current owner Name: Hydra, Health: 40
+Destroying Hydra

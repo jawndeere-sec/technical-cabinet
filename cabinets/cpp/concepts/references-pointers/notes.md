@@ -271,6 +271,97 @@ enemy's state changes
 
 No copied `Combatant` is involved. A raw pointer also says nothing by itself about who owns the object. Ownership has to come from the surrounding design.
 
+## Automatic And Dynamic Storage
+
+These two declarations create real `Combatant` objects, but their lifetimes follow different rules:
+
+```cpp
+Combatant enemy{"Wurm", 50};
+Combatant* summoned = new Combatant{"Hydra", 40};
+```
+
+`enemy` has automatic storage duration. When its enclosing scope ends, its destructor runs automatically.
+
+Hydra has dynamic storage duration. `new` obtains dynamic storage, constructs Hydra there, and returns its address. The local variable `summoned` is still an automatic pointer variable; it stores Hydra's address but is not Hydra itself.
+
+Destroying the pointer variable does not destroy the dynamic object. If the pointer disappears before the object is released, the program loses its route to that object and leaks it.
+
+## Manual Ownership And Dangling Pointers
+
+With a raw owning pointer, cleanup is manual:
+
+```cpp
+delete summoned;
+summoned = nullptr;
+```
+
+`delete summoned` invokes Hydra's destructor, ends Hydra's lifetime, and releases its dynamic storage. The pointer variable remains alive and still contains the old address until it is changed.
+
+That old non-null address is a dangling pointer. The address bits may be unchanged and the old bytes may still look familiar, but no live `Combatant` exists there. Dereferencing it is undefined behavior.
+
+Assigning `nullptr` does not release a resource. It resets this pointer's state after cleanup so a later null check can see that it identifies no object. Reversing the order would lose the only address before cleanup and leak Hydra:
+
+```cpp
+summoned = nullptr; // Hydra is still alive, but its address is lost
+delete summoned;    // deleting nullptr does nothing
+```
+
+A null guard is useful only when dead pointers are reliably reset. A dangling pointer is usually non-null, so `pointer != nullptr` alone cannot prove that the pointee is alive.
+
+## AddressSanitizer Evidence
+
+The ordinary warning-clean build did not diagnose either a deliberate leak or a dereference after `delete`. Those are runtime lifetime errors, not necessarily compiler-warning errors.
+
+The use-after-free variant was compiled with:
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic \
+  -g -fsanitize=address -fno-omit-frame-pointer \
+  main.cpp -o terminal-velocity-asan
+```
+
+AddressSanitizer reported `heap-use-after-free` and connected the three relevant events:
+
+```text
+new Combatant  -> dynamic region allocated
+delete         -> region freed and poisoned
+*summoned      -> invalid read from the freed region
+```
+
+The failing read appeared inside `std::string` because `printCombatant` had already dereferenced the dead `Combatant` and was trying to inspect its destroyed `Name` member. The standard-library frame was where the invalid read became visible, not the source of the lifetime bug.
+
+In ASan shadow memory, `fd` marked bytes in a freed heap region. After the dangling dereference was removed, a fresh instrumented build ran without an ASan diagnostic.
+
+## `std::unique_ptr`: Ownership Through RAII
+
+Manual ownership depends on remembering the matching `delete` across every control-flow path. `std::unique_ptr` makes one object's ownership responsibility explicit:
+
+```cpp
+std::unique_ptr<Combatant> summoned =
+    std::make_unique<Combatant>("Hydra", 40);
+```
+
+There are still two objects:
+
+- `summoned` is an automatic `unique_ptr` object.
+- Hydra is the dynamically stored `Combatant` that `summoned` owns.
+
+When `summoned` leaves scope, its destructor deletes Hydra. Hydra's destructor runs and its dynamic storage is released without an explicit `delete` in `main`. This is RAII: the owner's object lifetime controls the resource lifetime.
+
+A `unique_ptr` cannot be copied because two independent owners could both try to delete the same object. The compiler rejected this attempted copy through its deleted copy constructor:
+
+```cpp
+std::unique_ptr<Combatant> secondOwner = summoned; // does not compile
+```
+
+Ownership can instead be transferred:
+
+```cpp
+std::unique_ptr<Combatant> secondOwner = std::move(summoned);
+```
+
+This does not move Hydra to a new address and does not copy it. `secondOwner` receives the same pointer and deletion responsibility, while `summoned` becomes empty. At scope exit, exactly one owner deletes Hydra.
+
 ## What Errors This Explains
 
 - Why modifying a parameter passed by value did not change the caller's object.
@@ -280,6 +371,9 @@ No copied `Combatant` is involved. A raw pointer also says nothing by itself abo
 - Why changing an object through `selected->member` is visible through its original name.
 - Why reseating a pointer changed which `Combatant` received damage.
 - Why a null pointer must be checked before dereferencing.
+- Why losing the only raw owning pointer leaks a dynamic object.
+- Why dereferencing after `delete` produced an ASan `heap-use-after-free` report.
+- Why `unique_ptr` rejects copying but permits ownership transfer.
 
 ## Things I Keep Confusing
 
@@ -291,3 +385,7 @@ No copied `Combatant` is involved. A raw pointer also says nothing by itself abo
 - `selected->member` expands to `(*selected).member`, not `(selected*)`.
 - A raw pointer does not automatically imply heap allocation or ownership.
 - A pointer can be reseated or null; a reference cannot.
+- Destroying a raw pointer variable does not destroy the object it points to.
+- `delete` releases the dynamic object; assigning `nullptr` only resets this pointer's state.
+- A non-null pointer can still be dangling.
+- Moving a `unique_ptr` transfers ownership; it does not move the owned object in memory.

@@ -24,7 +24,7 @@ Fresh builds go into the ignored `build/` directory. Historical Apple-Silicon bi
 | [Arrays, strings, and loops](concepts/arrays-strings-loops/notes.md) | Arrays, iteration, sizes, string literals | In progress | Verified |
 | [User-defined types](concepts/user-defined-types/notes.md) | Enums, structs, unions | In progress | Verified |
 | [Functions](concepts/functions/notes.md) | Reserved drawer | Placeholder | Draft |
-| [References and pointers](concepts/references-pointers/notes.md) | Copies, aliases, const access, persistent mutation, pointer concepts | In progress | Verified |
+| [References and pointers](concepts/references-pointers/notes.md) | Copies, aliases, raw pointers, dynamic lifetime, ASan evidence, unique ownership | In progress | Verified |
 | [Classes](concepts/classes/notes.md) | Encapsulation, access, constructors, initialization, destruction, RAII | In progress | Verified |
 | [File input](concepts/file-input/notes.md) | Command-line paths, file streams, incremental line processing, exact substring counting | In progress | Verified |
 | [Maps](concepts/maps/notes.md) | Key-value state, associative counting, scope, ordered iteration, evidence boundaries | In progress | Verified |
