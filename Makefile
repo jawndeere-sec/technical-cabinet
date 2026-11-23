@@ -2,6 +2,7 @@
 
 verify:
 	@$(MAKE) -C cabinets/cpp verify
+	@python3 scripts/verify-study-cabinets.py
 
 clean:
 	@$(MAKE) -C cabinets/cpp clean

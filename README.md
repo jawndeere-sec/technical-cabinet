@@ -9,6 +9,8 @@ This is not a linear course. Each sub-cabinet groups related mechanisms, persona
 | Cabinet | Contents | Verification |
 | --- | --- | --- |
 | [C++](cabinets/cpp/README.md) | Language fundamentals, systems-oriented concepts, and reusable examples | `make -C cabinets/cpp verify` |
+| [AI Security](cabinets/ai-security/README.md) | Local inference, Python APIs, keyword RAG, grounding, and bounded AI/security study | `make verify` checks note structure and links |
+| [Security Platforms](cabinets/security-platforms/README.md) | Course-derived EDR, response, and SIEM mechanism distinctions | `make verify` checks note structure and links |
 
 New sub-cabinets should be added only after several durable entries exist. Concepts belong in their primary home and should be cross-linked rather than copied into multiple cabinets.
 
