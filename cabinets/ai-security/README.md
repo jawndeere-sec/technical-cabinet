@@ -11,5 +11,7 @@ Mechanisms from my local AI security lab and carefully bounded course notes. The
 | [Retrieved content as untrusted input](concepts/retrieved-content-trust-boundary/notes.md) | Where could source text cross an instruction boundary? | Lab source; untested threat model |
 | [Prompt Security browser deployment and controls](concepts/prompt-security-browser-controls/notes.md) | What deployment and enforcement paths are actually in the notes? | Course notes; not deployed here |
 | [Task specification and context budgets](concepts/task-specification-and-context/notes.md) | How do prompt structure and context management affect output? | Claude study notes; not a certification claim |
+| [Verifying AI output against evidence](concepts/ai-output-verification/notes.md) | Is the answer both supported and complete enough for its purpose? | Claude Module 3 study; not a hands-on test |
+| [Mapping AI workflows and ownership](concepts/ai-workflow-boundaries/notes.md) | Which steps can AI draft, and where do review and human decisions belong? | Claude Module 4 study; not a deployment |
 
 These are references, not a claim that a keyword RAG prototype is production-ready, that a prompt-injection exploit was demonstrated, or that vendor controls were independently verified.
